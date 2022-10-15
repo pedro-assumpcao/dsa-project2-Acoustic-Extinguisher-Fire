@@ -157,7 +157,7 @@ rm(cleaned_dataframe)
 #fwrite(cleaned_dataframe_gas,paste0(getwd(),"/data/cleaned_dataframe_gas.txt"))
 #fwrite(cleaned_dataframe_liquid,paste0(getwd(),"/data/cleaned_dataframe_liquid.txt"))
 
-# 4) DATA RESAMPLING ----
+# 5) DATA RESAMPLING ----
 
 set.seed(123)
 cleaned_dataframe_split = rsample::initial_split(data = cleaned_dataframe_liquid,
@@ -167,7 +167,7 @@ cleaned_dataframe_split = rsample::initial_split(data = cleaned_dataframe_liquid
 cleaned_dataframe_training = cleaned_dataframe_split |> training()
 cleaned_dataframe_testing = cleaned_dataframe_split |> testing()
 
-#4) MODEL SPECIFICATION ----
+#6) MODEL SPECIFICATION ----
 
 baseline_model = decision_tree() |> 
   # Set the engine
@@ -177,7 +177,7 @@ baseline_model = decision_tree() |>
 
 
 
-#5) FEATURE ENGINEERING ----
+#7) FEATURE ENGINEERING ----
 
 recipe_baseline = recipes::recipe(STATUS~.,
                                   data = cleaned_dataframe_training) |>
@@ -185,24 +185,24 @@ recipe_baseline = recipes::recipe(STATUS~.,
   step_dummy(all_nominal(),-all_outcomes())
 
 
-#6) RECIPE TRAINING ----
+#8) RECIPE TRAINING ----
 
 recipe_prep_baseline = recipe_baseline |> 
   prep(training = cleaned_dataframe_training)
 
-#7) PREPROCESS TRAINING DATA ----
+#9) PREPROCESS TRAINING DATA ----
 
 cleaned_dataframe_training_prep = recipe_prep_baseline |>
   recipes::bake(new_data = NULL)
 
 
-#8) PREPROCESS TEST DATA ----
+#10) PREPROCESS TEST DATA ----
 
 cleaned_dataframe_testing_prep = recipe_prep_baseline |> 
   recipes::bake(new_data = cleaned_dataframe_testing)
 
 
-#9) MODELS FITTING ----
+#11) MODELS FITTING ----
 
 #modeling only with experimental fixed variables 
 
@@ -223,9 +223,9 @@ baseline_model_fit_measured_variables = baseline_model |>
 #parsnip::tidy(baseline_model_fit)
 #parsnip::glance(baseline_model_fit)
 
-#10) PREDICTIONS ON TEST DATA ----
+#12) PREDICTIONS ON TEST DATA ----
 
-#10.1) Predictions for fixed experimental variables
+#12.1) Predictions for fixed experimental variables
 predictions_fixed_variables = predict(baseline_model_fit_fixed_variables,
                       new_data = cleaned_dataframe_testing_prep)
 
@@ -257,7 +257,7 @@ autoplot(yardstick::roc_curve(data = predictions_fixed_variables,
                               truth = true_class))
 
 
-#10.2) Predictions for sensor measured variables
+#12.2) Predictions for sensor measured variables
 predictions_measured_variables = predict(baseline_model_fit_measured_variables,
                                       new_data = cleaned_dataframe_testing_prep)
 
@@ -286,7 +286,7 @@ autoplot(yardstick::roc_curve(data = predictions_measured_variables,
                               estimate = predicted_proba,
                               truth = true_class))
 
-#11) CONCLUSIONS
+#13) CONCLUSIONS
 #Both simple decision tree models had a great performance (AUC > 0.90).
 #The measured variables was slightly less accurate, maybe because of the noise embedded in the data
 
