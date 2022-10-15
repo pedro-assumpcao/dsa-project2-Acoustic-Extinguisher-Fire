@@ -247,8 +247,8 @@ proba_temp = predict(baseline_model_fit_fixed_variables,
 
 predictions_fixed_variables = data.table(predictions_fixed_variables,predicted_proba = proba_temp$.pred_extinction)
 rm(proba_temp)
-#AUC = 0.949
-yardstick::pr_auc(data = predictions_fixed_variables,
+#AUC = 0.938
+yardstick::roc_auc(data = predictions_fixed_variables,
                   estimate = predicted_proba,
                   truth = true_class)
 
@@ -277,8 +277,8 @@ proba_temp = predict(baseline_model_fit_measured_variables,
 
 predictions_measured_variables = data.table(predictions_measured_variables,predicted_proba = proba_temp$.pred_extinction)
 
-#AUC = 0.904
-yardstick::pr_auc(data = predictions_measured_variables,
+#AUC = 0.864
+yardstick::roc_auc(data = predictions_measured_variables,
                   estimate = predicted_proba,
                   truth = true_class)
 
@@ -287,6 +287,6 @@ autoplot(yardstick::roc_curve(data = predictions_measured_variables,
                               truth = true_class))
 
 #13) CONCLUSIONS
-#Both simple decision tree models had a great performance (AUC > 0.90).
+#Both simple decision tree models had a great performance (AUC > 0.85).
 #The measured variables was slightly less accurate, maybe because of the noise embedded in the data
 
